@@ -3,10 +3,10 @@ import activeusers from "../activeusers.js";
 
 const router = Router();
 
-router.post("/activeuser", async (req, res) => {
+router.post("/activeuser", (req, res) => {
   const activeuser = req.body;
 
-  await activeusers.find({ email: req.body.email }).then((data) => {
+  activeusers.find({ email: req.body.email }).then((data) => {
     if (data.length == 0) {
       activeusers.create(activeuser, (err, data) => {
         if (err) {
