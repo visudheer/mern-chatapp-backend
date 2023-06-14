@@ -36,21 +36,26 @@ mongoose.connect(process.env.CONNECTION_URL, {
 });
 
 const db = mongoose.connection;
+
 db.once("open", () => {
   const activeuserCollection = db.collection("newusers");
   const changeStream1 = activeuserCollection.watch();
   changeStream1.on("change", (change) => {
     if (change.operationType === "insert") {
       const userDetails = change.fullDocument;
-      pusher.trigger("currentuseremail", "inserted", {
-        chatusername: userDetails.name,
-        chatuseremail: userDetails.email,
-        chatuserimgUrl: userDetails.imgUrl,
-        chatusertimestamp: userDetails.timestamp,
-        currentuseremail: userDetails.currentuseremail,
-      });
+      pusher
+        .trigger("chatuseremail", "inserted", {
+          chatusername: userDetails.chatusername,
+          chatuseremail: userDetails.chatuseremail,
+          chatuserimgUrl: userDetails.chatuserimgUrl,
+          chatusertimestamp: userDetails.chatusertimestamp,
+          currentuseremail: userDetails.currentuseremail,
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
-      console.log("error pusher");
+      console.log("error pusher1");
     }
   });
 
@@ -69,7 +74,7 @@ db.once("open", () => {
         timestamp: userDetails.timestamp,
       });
     } else {
-      console.log("error pusher");
+      console.log("error pusher2");
     }
   });
 });
