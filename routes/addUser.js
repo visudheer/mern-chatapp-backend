@@ -5,11 +5,18 @@ const router = Router();
 
 router.post("/newuser", (req, res) => {
   const newuser = req.body;
-  addnewuser.create(newuser, (err, data) => {
-    if (err) {
-      res.status(400).send(err);
+
+  addnewuser.find({ chatuseremail: req.body.chatuseremail }).then((data) => {
+    if (data.length == "") {
+      addnewuser.create(newuser, (err, data) => {
+        if (err) {
+          res.status(400).send(err);
+        } else {
+          res.status(201).send(data);
+        }
+      });
     } else {
-      res.status(201).send(data);
+      res.status(409).send({ email: data.chatuseremail, status: "Exists" });
     }
   });
 });
